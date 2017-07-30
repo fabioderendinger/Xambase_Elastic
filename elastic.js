@@ -221,48 +221,48 @@
 
 {
   	"settings" : {
-    	"analysis" : {
-    		"filter" : {
-    			"quadgrams_filter" : {
-                	"type":     "ngram",
+        "analysis" : {
+    		    "filter" : {
+                "quadgrams_filter" : {  
+                    "type":     "ngram",
                     "min_gram": 4,
                     "max_gram": 4
                 },
                 "autocomplete_filter": {
-	            	"type":     "edge_ngram",
-	            	"min_gram": 1,
-	            	"max_gram": 20
-        		}
-    		},
-      		"analyzer": {
-	        	"standardAnalyzer": {
-		          	"type": "custom",
-		          	"tokenizer": "standard"
-		          	"filter": [
-		          		"asciifolding",
-		            	"lowercase",
-		          	]
-	        	},
-	        	"ngramAnalyzer": {
-		          	"type": "custom",
-		          	"tokenizer": "standard"
-		          	"filter": [
-		          		"asciifolding",
-		            	"lowercase",
-		            	"quadgrams_filter"
-		          	]
-	        	},
-	        	"_allAnalyzer": {
-		          	"type": "custom",
-		          	"tokenizer": "standard"
-		          	"filter": [
-		          		"asciifolding",
-		            	"lowercase",
-		            	"autocomplete_filter"
-		          	]
-	        	}	        		        	
-	      	}
-    	}	
+                  	"type":     "edge_ngram",
+                  	"min_gram": 1,
+                  	"max_gram": 20
+  		          }
+    		    },
+        		"analyzer": {
+              	"standardAnalyzer": {
+      	          	"type": "custom",
+      	          	"tokenizer": "standard"
+      	          	"filter": [
+      	          		"asciifolding",
+      	            	"lowercase",
+      	          	]
+              	},
+              	"ngramAnalyzer": {
+      	          	"type": "custom",
+      	          	"tokenizer": "standard"
+      	          	"filter": [
+      	          		"asciifolding",
+      	            	"lowercase",
+      	            	"quadgrams_filter"
+      	          	]
+              	},
+              	"_allAnalyzer": {
+      	          	"type": "custom",
+      	          	"tokenizer": "standard"
+      	          	"filter": [
+      	          		"asciifolding",
+      	            	"lowercase",
+      	            	"autocomplete_filter"
+      	          	]
+                }      	        		        	
+            }
+        }	
   	}
 }
 
