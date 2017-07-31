@@ -6,6 +6,12 @@
   "xambase_index": {
   	"mappings": {
      	"document": {
+        "_all" : {
+          "index_options": "freqs",
+          "analyzer": "_allAnalyzer",
+          "search_analyzer": "standardAnalyzer"
+        }
+        "include_in_all": false,
         "properties": {
           "id": {
             "type": "long"
@@ -18,22 +24,29 @@
           },
 		      "document_title": {
             "type": "text",
+            // Don't store position for better performance: https://www.elastic.co/guide/en/elasticsearch/guide/current/stopwords-phrases.html
+            "index_options": "freqs",
+            "include_in_all": true,
             "analyzer": "standardAnalyzer",
             "fields": {
             // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
               "ngram":   { 
                 "type":     "text",
+                "index_options": "freqs",
                 "analyzer": "ngramAnalyzer"
               }
             }
           },
 		      "document_sub_title": {
             "type": "text",
+            "index_options": "freqs",
+            "include_in_all": true,
             "analyzer": "standardAnalyzer",
             "fields": {
             // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
               "ngram":   { 
                 "type":     "text",
+                "index_options": "freqs",
                 "analyzer": "ngramAnalyzer"
               }
             }
@@ -61,9 +74,11 @@
           },
     			"month":{
             "type": "byte"
+            "index": "no"
           },
     			"grade":{
             "type": "float"
+            "index": "no"
           },
     			"weight":{
             "type": "float"
@@ -91,9 +106,11 @@
               },
     				  "school_name": {
               	"type": "keyword"
+                "include_in_all": true
         		  },
     				  "abbr": {
                 "type": "keyword"
+                "include_in_all": true
               },
     				  "language_id": {
                 "type": "short"
@@ -130,14 +147,16 @@
     				"type": "nested",
   		  		"properties": {
   			  	  "id": {
-                	"type": "integer"
+                "type": "integer"
               },
   				    "subject_name": {
                 "type": "keyword",
+                "include_in_all": true,
                 "fields": {
                 // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
                   "ngram": { 
                     "type":     "text",
+                    "index_options": "freqs",
                     "analyzer": "ngramAnalyzer"
                   }
                 }
@@ -168,9 +187,11 @@
               },
   				    "first_name": {
                 "type": "keyword"
+                "include_in_all": true
               },
   				    "last_name": {
                 "type": "keyword"
+                "include_in_all": true
               },
   				    "status": {
                 "type": "byte"
@@ -220,60 +241,51 @@
 // *****************************************
 
 {
-  	"settings" : {
-        "analysis" : {
-    		    "filter" : {
-                "quadgrams_filter" : {  
-                    "type":     "ngram",
-                    "min_gram": 4,
-                    "max_gram": 4
-                },
-                "autocomplete_filter": {
-                  	"type":     "edge_ngram",
-                  	"min_gram": 1,
-                  	"max_gram": 20
-  		          }
-    		    },
-        		"analyzer": {
-              	"standardAnalyzer": {
-      	          	"type": "custom",
-      	          	"tokenizer": "standard"
-      	          	"filter": [
-      	          		"asciifolding",
-      	            	"lowercase",
-      	          	]
-              	},
-              	"ngramAnalyzer": {
-      	          	"type": "custom",
-      	          	"tokenizer": "standard"
-      	          	"filter": [
-      	          		"asciifolding",
-      	            	"lowercase",
-      	            	"quadgrams_filter"
-      	          	]
-              	},
-              	"_allAnalyzer": {
-      	          	"type": "custom",
-      	          	"tokenizer": "standard"
-      	          	"filter": [
-      	          		"asciifolding",
-      	            	"lowercase",
-      	            	"autocomplete_filter"
-      	          	]
-                }      	        		        	
-            }
-        }	
-  	}
+	"settings" : {
+    "analysis" : {
+	    "filter" : {
+        "quadgrams_filter" : {  
+          "type":     "ngram",
+          "min_gram": 4,
+          "max_gram": 4
+        },
+        "autocomplete_filter": {
+        	"type":     "edge_ngram",
+        	"min_gram": 1,
+        	"max_gram": 20
+        }
+      },
+		  "analyzer": {
+      	"standardAnalyzer": {
+        	"type": "custom",
+        	"tokenizer": "standard"
+        	"filter": [
+        		"asciifolding",
+          	"lowercase",
+        	]
+      	},
+      	"ngramAnalyzer": {
+        	"type": "custom",
+        	"tokenizer": "standard"
+        	"filter": [
+        		"asciifolding",
+          	"lowercase",
+          	"quadgrams_filter"
+        	]
+      	},
+      	"_allAnalyzer": {
+        	"type": "custom",
+        	"tokenizer": "standard"
+        	"filter": [
+        		"asciifolding",
+          	"lowercase",
+          	"autocomplete_filter"
+        	]
+        }      	        		        	
+      }
+    }	
+	}
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -291,42 +303,42 @@
 // TeacherField: empty
 
 {
-    "query" : {
-        "bool" : { 
-            "filter" : [
-                { "term" : { "document_type" : $document_type}},
-                { "term" : { "is_draft" : 0}},
-                { "term" : { "status" : 1}},
-                { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
-                { "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "school",
-                	"query": {
-                		"bool": {
-                			"filter": {
-                				{ "term" : { "country_id" : $country_id}},
-                				{ "term" : { "language_id" : $language_id}},
-               					{ "term" : { "is_university" : $is_university}},
-                			}
-                		}
-                	}
-                  }
-            	}
-            ],
-            "must" : {
-            	"multi_match": {
-            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-		            "query": $TitleField,
-		            "type": "most_fields",
-		            "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
-            	}	
-        	}
+  "query" : {
+    "bool" : { 
+      "filter" : [
+        { "term" : { "document_type" : $document_type}},
+        { "term" : { "is_draft" : 0}},
+        { "term" : { "status" : 1}},
+        { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
+        { "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "school",
+          	"query": {
+          		"bool": {
+          			"filter": {
+          				{ "term" : { "country_id" : $country_id}},
+          				{ "term" : { "language_id" : $language_id}},
+         					{ "term" : { "is_university" : $is_university}},
+          			}
+          		}
+          	}
+          }
+        }
+      ],
+      "must" : {
+      	"multi_match": {
+      		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+          "query": $TitleField,
+          "type": "most_fields",
+          "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
+      	}	
     	}
-	}
+  	}
+	},
 	"sort": [
 		{ "_score" : { "order": "desc" }},
-        { "year" :   { "order": "desc" }}
-    ]
+    { "year" :   { "order": "desc" }}
+  ]
 }
 
 
@@ -337,51 +349,51 @@
 // TeacherField: $teacher_id or empty
 
 {
-    "query" : {
-        "bool" : { 
-            "filter" : [
-                { "term" : { "document_type" : $document_type}},
-                { "term" : { "is_draft" : 0}},
-                { "term" : { "status" : 1}},
-                { "range": { "year" : { "gte" : $starYear, 'lte' : $endYear }}},
-                { "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "school",
-                	"query": {
-                		"bool": {
-                			"filter": {
-                				{ "term" : { "country_id" : $country_id}},
-                				{ "term" : { "language_id" : $language_id}},
-               					{ "term" : { "is_university" : $is_university}},
-                			}
-                		}
-                	}
-                  }
-            	}
-            ],
-            "must" : {
-            	"multi_match": {
-            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-		            "query": $TitleField,
-		            "type": "most_fields",
-		            "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
-            	}	
-        	},
-        	"should" : {
-        		"bool" : {
-        			"must" : [
-        				{ "term" : { "school_id" : $school_id}},
-        				{ "term" : { "subject_id" : $subject_id}},
-        				{ "term" : { "teacher_id" : $teacher_id}}
-        			]
-        		}
-        	}
-    	}
-	}
+  "query" : {
+    "bool" : { 
+      "filter" : [
+        { "term" : { "document_type" : $document_type}},
+        { "term" : { "is_draft" : 0}},
+        { "term" : { "status" : 1}},
+        { "range": { "year" : { "gte" : $starYear, 'lte' : $endYear }}},
+        { "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "school",
+          	"query": {
+          		"bool": {
+          			"filter": {
+          				{ "term" : { "country_id" : $country_id}},
+          				{ "term" : { "language_id" : $language_id}},
+         					{ "term" : { "is_university" : $is_university}},
+          			}
+          		}
+          	}
+          }
+        }
+      ],
+      "must" : {
+      	"multi_match": {
+      		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+          "query": $TitleField,
+          "type": "most_fields",
+          "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
+      	}	
+      },
+      "should" : {
+  		  "bool" : {
+  		    "must" : [
+    				{ "term" : { "school_id" : $school_id}},
+    				{ "term" : { "subject_id" : $subject_id}},
+    				{ "term" : { "teacher_id" : $teacher_id}}
+    			]
+  		  }
+      }  
+  	}
+	},
 	"sort": [
 		{ "_score" : { "order": "desc" }},
-        { "year" :   { "order": "desc" }}
-    ]
+    { "year" :   { "order": "desc" }}
+  ]
 }
 
 
@@ -394,57 +406,57 @@
 // TeacherField: empty
 
 {
-    "query" : {
-        "bool" : { 
-            "filter" : [
-                { "term" : { "document_type" : $document_type}},
-                { "term" : { "is_draft" : 0}},
-                { "term" : { "status" : 1}},
-                { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
-                { "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "school",
-                	"query": {
-                		"bool": {
-                			"filter": {
-                				{ "term" : { "country_id" : $country_id}},
-                				{ "term" : { "language_id" : $language_id}},
-               					{ "term" : { "is_university" : $is_university}},
-                			}
-                		}
-                	}
-                  }
-            	}
-            ],
-            "must" : {
-            	"multi_match": {
+  "query" : {
+    "bool" : { 
+      "filter" : [
+        { "term" : { "document_type" : $document_type}},
+        { "term" : { "is_draft" : 0}},
+        { "term" : { "status" : 1}},
+        { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
+        { "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "school",
+          	"query": {
+          		"bool": {
+          			"filter": {
+          				{ "term" : { "country_id" : $country_id}},
+          				{ "term" : { "language_id" : $language_id}},
+         					{ "term" : { "is_university" : $is_university}},
+          			}
+          		}
+          	}
+          }
+      	}
+      ],
+      "must" : {
+      	"multi_match": {
+      		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+          "query": $TitleField,
+          "type": "most_fields",
+          "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
+      	}	
+    	},
+    	"should" : {
+    		{ "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "subject",
+          	"query": {
+          		"multi-match" : { 
             		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-		            "query": $TitleField,
-		            "type": "most_fields",
-		            "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
-            	}	
-        	},
-        	"should" : {
-        		{ "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "subject",
-                	"query": {
-                		"multi-match" : { 
-	            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-			            "query": $SubjectField,
-			            "type": "most_fields",
-			            "fields": [ "subject_name^2", "subject_name.ngram" ]
-                		}
-                	}
-                  }
-            	}
-        	}
-    	}
-	}
+                "query": $SubjectField,
+                "type": "most_fields",
+                "fields": [ "subject_name^2", "subject_name.ngram" ]
+          		}
+          	}
+          }
+        }
+      }
+  	}
+	},
 	"sort": [
 		{ "_score" : { "order": "desc" }},
-        { "year" :   { "order": "desc" }}
-    ]
+    { "year" :   { "order": "desc" }}
+  ]
 }
 
 
@@ -457,49 +469,49 @@
 // TeacherField: empty
 
 {
-    "query" : {
-        "bool" : { 
-            "filter" : [
-                { "term" : { "document_type" : $document_type}},
-                { "term" : { "is_draft" : 0}},
-                { "term" : { "status" : 1}},
-                { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
-                { "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "school",
-                	"query": {
-                		"bool": {
-                			"filter": {
-                				{ "term" : { "country_id" : $country_id}},
-                				{ "term" : { "language_id" : $language_id}},
-               					{ "term" : { "is_university" : $is_university}},
-                			}
-                		}
-                	}
-                  }
+  "query" : {
+    "bool" : { 
+      "filter" : [
+        { "term" : { "document_type" : $document_type}},
+        { "term" : { "is_draft" : 0}},
+        { "term" : { "status" : 1}},
+        { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
+        { "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "school",
+          	"query": {
+          		"bool": {
+          			"filter": {
+          				{ "term" : { "country_id" : $country_id}},
+          				{ "term" : { "language_id" : $language_id}},
+         					{ "term" : { "is_university" : $is_university}},
+          			}
+          		}
+          	}
+          }
+      	}
+      ],
+    	"must" : {
+    		{ "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "subject",
+          	"query": {
+          		"multi-match" : { 
+            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+                "query": $SubjectField,
+                "type": "most_fields",
+                "fields": [ "subject_name^2", "subject_name.ngram" ]
             	}
-            ],
-        	"must" : {
-        		{ "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "subject",
-                	"query": {
-                		"multi-match" : { 
-	            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-			            "query": $SubjectField,
-			            "type": "most_fields",
-			            "fields": [ "subject_name^2", "subject_name.ngram" ]
-                		}
-                	}
-                  }
-            	}
-        	}
+            }
+          }
+      	}
     	}
-	}
+  	}
+	},
 	"sort": [
 		{ "_score" : { "order": "desc" }},
-        { "year" :   { "order": "desc" }}
-    ]
+    { "year" :   { "order": "desc" }}
+  ]
 }
 
 
@@ -512,31 +524,31 @@
 // TeacherField: empty
 
 {
-    "query" : {
-        "bool" : { 
-            "filter" : [
-                { "term" : { "document_type" : $document_type}},
-                { "term" : { "is_draft" : 0}},
-                { "term" : { "status" : 1}},
-                { "range": { "year" : { "gte" : $starYear, 'lte' : $endYear }}},
-                { "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "school",
-                	"query": {
-                		"bool": {
-                			"filter": {
-                				{ "term" : { "country_id" : $country_id}},
-                				{ "term" : { "language_id" : $language_id}},
-               					{ "term" : { "is_university" : $is_university}},
-                			}
-                		}
-                	}
-                  }
-            	},
-            	{ "term" : { "school_id" : $school_id}}
-            ],
-    	}
-	}
+  "query" : {
+    "bool" : { 
+      "filter" : [
+        { "term" : { "document_type" : $document_type}},
+        { "term" : { "is_draft" : 0}},
+        { "term" : { "status" : 1}},
+        { "range": { "year" : { "gte" : $starYear, 'lte' : $endYear }}},
+        { "nested": {
+          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+          	"path": "school",
+          	"query": {
+          		"bool": {
+          			"filter": {
+          				{ "term" : { "country_id" : $country_id}},
+          				{ "term" : { "language_id" : $language_id}},
+         					{ "term" : { "is_university" : $is_university}},
+          			}
+          		}
+          	}
+          }
+        },
+        { "term" : { "school_id" : $school_id}}
+      ],
+  	}
+	},
 	"sort" : { "id" :   { "order": "desc" }}
 }
 
@@ -548,39 +560,26 @@
 // QUERY FOR MY UPLOADS SCREEN
 // *****************************************
 
+// SearchField: $SearchValue
+// User: $user_id
+
+
 {
-    "query" : {
-        "bool" : { 
-            "filter" : { "term" : { "status" : 1}},
-            "must" : {
-            	"multi_match": {
-            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-		            "query": $SearchValue,
-		            "type": "most_fields",
-		            "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
-            	}	
-        	},
-        	"should" : {
-        		{ "nested": {
-                	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-                	"path": "subject",
-                	"query": {
-                		"multi-match" : { 
-	            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-			            "query": $SubjectField,
-			            "type": "most_fields",
-			            "fields": [ "subject_name^2", "subject_name.ngram" ]
-                		}
-                	}
-                  }
-            	}
-        	}
-    	}
-	}
+  "query" : {
+    "bool" : { 
+      "filter" : [
+        { "term" : { "status" : 1}},
+        { "term" : { "user_id" : $user_id}}
+      ],
+      "must" : {
+        "match": { "_all":  $SearchValue}},
+    	},
+    }
+	},
 	"sort": [
 		{ "_score" : { "order": "desc" }},
-    { "year" :   { "order": "desc" }}
-    ]
+    { "id" :   { "order": "desc" }}
+  ]
 }
 
 
