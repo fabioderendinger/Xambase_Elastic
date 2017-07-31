@@ -3,211 +3,211 @@
 // *****************************************
 
 {
-   "xambase_index": {
-      	"mappings": {
-         	"document": {
-            	"properties": {
-	            	"id": {
-	                  "type": "long"
-	            	},
-					"user_id": {
-	                  "type": "integer"
-	            	},
-					"document_type": {
-	                  "type": "byte",
-	            	},
-					"document_title": {
-	                  "type": "text",
-	                  "analyzer": "standardAnalyzer",
-	                  "fields": {
-	                  	// Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-                        "ngram":   { 
-                            "type":     "text",
-                            "analyzer": "ngramAnalyzer"
-                        }
-                      }
-	            	},
-					"document_sub_title": {
-	                  "type": "text",
-	                  "analyzer": "standardAnalyzer",
-	                  "fields": {
-	                  	// Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-                        "ngram":   { 
-                            "type":     "text",
-                            "analyzer": "ngramAnalyzer"
-                        }
-                      }
-	            	},
-					//"images": {
-	                //  "type": "..."
-	            	//},
-					"school_id": {
-	                  "type": "integer"
-	            	},
-					"subject_id": {
-	                  "type": "integer"
-	            	},
-					"teacher_id": {
-	                  "type": "integer"
-	            	},
-					"term_id": {
-	                  "type": "integer"
-	            	},
-					"course_id": {
-	                  "type": "integer"
-	            	},
-					"year": {
-	                  "type": "integer"
-	            	},
-					"month":{
-	                  "type": "byte"
-	            	},
-					"grade":{
-	                  "type": "float"
-	            	},
-					"weight":{
-	                  "type": "float"
-	            	},
-					"published_as": {
-	                  "type": "keyword"
-	            	},
-					"is_draft": {
-	                  "type": "byte"
-	            	},
-					"status": {
-	                  "type": "byte"
-	            	},
-					"updated_at": {
-	                  "type": "date"
-	            	},
-					"created_at": {
-	                  "type": "date"
-	            	},
-					"school":	{
-					  	"type": "nested",
-					  	"properties": {
-						  "id": {
-	                  	    "type": "integer"
-	            		  },
-						  "school_name": {
-	                  	    "type": "keyword"
-	            		  },
-						  "abbr": {
-	                  	    "type": "keyword"
-	            		  },
-						  "language_id": {
-	                  	    "type": "short"
-	            		  },
-						  "country_id": {
-	                  	    "type": "short"
-	            		  },
-						  "is_university": {
-	                  	    "type": "byte"
-	            		  },
-						  "status": {
-	                  	    "type": "byte"
-	            		  },
-						  "updated_at": {
-	                  	    "type": "date"
-	            		  },
-						  "created_at": {
-	                  	    "type": "date"
-	            		  },
-	            		  // What's the reason we need the complete country information in the document?...
-	            		  /*
-						"country":	{
-							"id":1,
-							"country_name":"India",
-							"status":1,
-							"updated_at":"2017-01-22 20:41:22",
-							"created_at":"2017-01-23 02:02:49"
-							}
-						  */
-						}
-					},
+  "xambase_index": {
+  	"mappings": {
+     	"document": {
+        "properties": {
+          "id": {
+            "type": "long"
+          },
+		      "user_id": {
+            "type": "integer"
+          },
+          "document_type": {
+            "type": "byte",
+          },
+		      "document_title": {
+            "type": "text",
+            "analyzer": "standardAnalyzer",
+            "fields": {
+            // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+              "ngram":   { 
+                "type":     "text",
+                "analyzer": "ngramAnalyzer"
+              }
+            }
+          },
+		      "document_sub_title": {
+            "type": "text",
+            "analyzer": "standardAnalyzer",
+            "fields": {
+            // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+              "ngram":   { 
+                "type":     "text",
+                "analyzer": "ngramAnalyzer"
+              }
+            }
+        	},
+      			//"images": {
+                  //  "type": "..."
+              	//},
+    			"school_id": {
+            "type": "integer"
+          },
+    			"subject_id": {
+            "type": "integer"
+          },
+    			"teacher_id": {
+            "type": "integer"
+          },
+    			"term_id": {
+            "type": "integer"
+          },
+    			"course_id": {
+            "type": "integer"
+          },
+    			"year": {
+            "type": "integer"
+          },
+    			"month":{
+            "type": "byte"
+          },
+    			"grade":{
+            "type": "float"
+          },
+    			"weight":{
+            "type": "float"
+          },
+    			"published_as": {
+            "type": "keyword"
+          },
+    			"is_draft": {
+            "type": "byte"
+          },
+    			"status": {
+            "type": "byte"
+          },
+    			"updated_at": {
+            "type": "date"
+          },
+    			"created_at": {
+            "type": "date"
+          },
+    			"school":	{
+    			  "type": "nested",
+    			  "properties": {
+      				"id": {
+                "type": "integer"
+              },
+    				  "school_name": {
+              	"type": "keyword"
+        		  },
+    				  "abbr": {
+                "type": "keyword"
+              },
+    				  "language_id": {
+                "type": "short"
+              },
+    				  "country_id": {
+                "type": "short"
+              },
+    				  "is_university": {
+                "type": "byte"
+              },
+    				  "status": {
+                "type": "byte"
+              },
+    				  "updated_at": {
+                "type": "date"
+              },
+    				  "created_at": {
+                "type": "date"
+              },
+              // What's the reason we need the complete country information in the document?...
+              /*
+      				"country":	{
+      					"id":1,
+      					"country_name":"India",
+      					"status":1,
+      					"updated_at":"2017-01-22 20:41:22",
+      					"created_at":"2017-01-23 02:02:49"
+      					}
+      				  */
+    				}
+    		  },
 
-					"subject":	{
-						"type": "nested",
-				  		"properties": {
-					  	  "id": {
-                  	    	"type": "integer"
-                  	      },
-						  "subject_name": {
-                  	    	"type": "keyword",
-		                    "fields": {
-		                  	  // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-	                          "ngram": { 
-	                              "type":     "text",
-	                              "analyzer": "ngramAnalyzer"
-                        	  }
-                      		}
-                      	  },
-						  "school_id": {
-                  	    	"type": "integer"
-                  	      },
-						  "status": {
-                  	    	"type": "byte"
-                  	      },
-						  "updated_at": {
-                  	    	"type": "date"
-                  	      },
-						  "created_at": {
-                  	    	"type": "date"
-                  	      },							
-                  	  	}
-                  	},
+    			"subject":	{
+    				"type": "nested",
+  		  		"properties": {
+  			  	  "id": {
+                	"type": "integer"
+              },
+  				    "subject_name": {
+                "type": "keyword",
+                "fields": {
+                // Multi-field mapping: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+                  "ngram": { 
+                    "type":     "text",
+                    "analyzer": "ngramAnalyzer"
+                  }
+                }
+              },
+    				  "school_id": {
+                "type": "integer"
+              },
+    				  "status": {
+                "type": "byte"
+              },
+    				  "updated_at": {
+                "type": "date"
+              },
+    				  "created_at": {
+                "type": "date"
+              },							
+            }
+          },
 
-					"teacher":	{
-						"type": "nested",
-				  		"properties": {
-					  	  "id": {
-                  	    	"type": "integer"
-                  	      },
-						  "school_id": {
-                  	    	"type": "integer"
-                  	      },
-						  "first_name": {
-                  	    	"type": "keyword"
-                  	      },
-						  "last_name": {
-                  	    	"type": "keyword"
-                  	      },
-						  "status": {
-                  	    	"type": "byte"
-                  	      },
-						  "updated_at": {
-                  	    	"type": "date"
-                  	      },
-						  "created_at": {
-                  	    	"type": "date"
-                  	      },
-						}
-					}
+    			"teacher":	{
+    				"type": "nested",
+  		  		"properties": {
+  			  	  "id": {
+                "type": "integer"
+              },
+  				    "school_id": {
+                "type": "integer"
+              },
+  				    "first_name": {
+                "type": "keyword"
+              },
+  				    "last_name": {
+                "type": "keyword"
+              },
+  				    "status": {
+                "type": "byte"
+              },
+  				    "updated_at": {
+                "type": "date"
+              },
+  				    "created_at": {
+                "type": "date"
+              }
+    				}
+    			},
 
-					"course":	{
-						"type": "nested",
-				  		"properties": {
-					  	  "id": {
-                  	    	"type": "integer"
-                  	      },
-						  "subject_id": {
-                  	    	"type": "integer"
-                  	      },
-						  "course_name": {
-                  	    	"type": "keyword"
-                  	      },
-						  "status": {
-                  	    	"type": "byte"
-                  	      },
-						  "updated_at": {
-                  	    	"type": "date"
-                  	      },
-						  "created_at": {
-                  	    	"type": "date"
-                  	      },
-						}
-					}
-				}
+    			"course":	{
+      			"type": "nested",
+      		  "properties": {
+    			  	"id": {
+        	    	"type": "integer"
+              },
+    				  "subject_id": {
+                "type": "integer"
+              },
+    				  "course_name": {
+                "type": "keyword"
+              },
+    				  "status": {
+                "type": "byte"
+              },
+    				  "updated_at": {
+                "type": "date"
+              },
+    				  "created_at": {
+                "type": "date"
+              }
+				    }  
+				  }
+        }
 			}
 		}
 	}
@@ -579,7 +579,7 @@
 	}
 	"sort": [
 		{ "_score" : { "order": "desc" }},
-        { "year" :   { "order": "desc" }}
+    { "year" :   { "order": "desc" }}
     ]
 }
 
