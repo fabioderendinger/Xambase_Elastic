@@ -10,7 +10,7 @@
           "index_options": "freqs",
           "analyzer": "_allAnalyzer",
           "search_analyzer": "standardAnalyzer"
-        }
+        },
         "include_in_all": false,
         "properties": {
           "id": {
@@ -20,7 +20,7 @@
             "type": "integer"
           },
           "document_type": {
-            "type": "byte",
+            "type": "byte"
           },
 		      "document_title": {
             "type": "text",
@@ -73,11 +73,11 @@
             "type": "integer"
           },
     			"month":{
-            "type": "byte"
+            "type": "byte",
             "index": "no"
           },
     			"grade":{
-            "type": "float"
+            "type": "float",
             "index": "no"
           },
     			"weight":{
@@ -105,11 +105,11 @@
                 "type": "integer"
               },
     				  "school_name": {
-              	"type": "keyword"
+              	"type": "keyword",
                 "include_in_all": true
         		  },
     				  "abbr": {
-                "type": "keyword"
+                "type": "keyword",
                 "include_in_all": true
               },
     				  "language_id": {
@@ -129,7 +129,7 @@
               },
     				  "created_at": {
                 "type": "date"
-              },
+              }
               // What's the reason we need the complete country information in the document?...
               /*
       				"country":	{
@@ -172,7 +172,7 @@
               },
     				  "created_at": {
                 "type": "date"
-              },							
+              }							
             }
           },
 
@@ -186,11 +186,11 @@
                 "type": "integer"
               },
   				    "first_name": {
-                "type": "keyword"
+                "type": "keyword",
                 "include_in_all": true
               },
   				    "last_name": {
-                "type": "keyword"
+                "type": "keyword",
                 "include_in_all": true
               },
   				    "status": {
@@ -258,7 +258,7 @@
 		  "analyzer": {
       	"standardAnalyzer": {
         	"type": "custom",
-        	"tokenizer": "standard"
+        	"tokenizer": "standard",
         	"filter": [
         		"asciifolding",
           	"lowercase",
@@ -266,7 +266,7 @@
       	},
       	"ngramAnalyzer": {
         	"type": "custom",
-        	"tokenizer": "standard"
+        	"tokenizer": "standard",
         	"filter": [
         		"asciifolding",
           	"lowercase",
@@ -275,7 +275,7 @@
       	},
       	"_allAnalyzer": {
         	"type": "custom",
-        	"tokenizer": "standard"
+        	"tokenizer": "standard",
         	"filter": [
         		"asciifolding",
           	"lowercase",
@@ -309,17 +309,17 @@
         { "term" : { "document_type" : $document_type}},
         { "term" : { "is_draft" : 0}},
         { "term" : { "status" : 1}},
-        { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
+        { "range": { "year": { "gte": $starYear, "lte": $endYear }}},
         { "nested": {
           	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
           	"path": "school",
           	"query": {
           		"bool": {
-          			"filter": {
+          			"filter": [
           				{ "term" : { "country_id" : $country_id}},
           				{ "term" : { "language_id" : $language_id}},
-         					{ "term" : { "is_university" : $is_university}},
-          			}
+         					{ "term" : { "is_university" : $is_university}}
+								]
           		}
           	}
           }
@@ -330,7 +330,7 @@
       		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
           "query": $TitleField,
           "type": "most_fields",
-          "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
+          "fields": [ "document_title^2", "document_title.ngram", "document_sub_title", "document_sub_title.ngram"]
       	}	
     	}
   	}
@@ -355,17 +355,17 @@
         { "term" : { "document_type" : $document_type}},
         { "term" : { "is_draft" : 0}},
         { "term" : { "status" : 1}},
-        { "range": { "year" : { "gte" : $starYear, 'lte' : $endYear }}},
+        { "range": { "year" : { "gte" : $starYear, "lte" : $endYear }}},
         { "nested": {
           	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
           	"path": "school",
           	"query": {
           		"bool": {
-          			"filter": {
+          			"filter": [
           				{ "term" : { "country_id" : $country_id}},
           				{ "term" : { "language_id" : $language_id}},
-         					{ "term" : { "is_university" : $is_university}},
-          			}
+         					{ "term" : { "is_university" : $is_university}}
+								]
           		}
           	}
           }
@@ -376,7 +376,7 @@
       		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
           "query": $TitleField,
           "type": "most_fields",
-          "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
+          "fields": [ "document_title^2", "document_title.ngram", "document_sub_title", "document_sub_title.ngram"]
       	}	
       },
       "should" : {
@@ -412,17 +412,17 @@
         { "term" : { "document_type" : $document_type}},
         { "term" : { "is_draft" : 0}},
         { "term" : { "status" : 1}},
-        { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
+        { "range": { "year": { "gte": $starYear, "lte": $endYear }}},
         { "nested": {
           	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
           	"path": "school",
           	"query": {
           		"bool": {
-          			"filter": {
+          			"filter": [
           				{ "term" : { "country_id" : $country_id}},
           				{ "term" : { "language_id" : $language_id}},
-         					{ "term" : { "is_university" : $is_university}},
-          			}
+         					{ "term" : { "is_university" : $is_university}}
+								]
           		}
           	}
           }
@@ -433,23 +433,22 @@
       		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
           "query": $TitleField,
           "type": "most_fields",
-          "fields": [ "document_title^4", "document_title.ngram^2", "document_sub_title", "document_sub_title.ngram",  ]
+          "fields": [ "document_title^2", "document_title.ngram", "document_sub_title", "document_sub_title.ngram"]
       	}	
     	},
     	"should" : {
-    		{ "nested": {
-          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-          	"path": "subject",
-          	"query": {
-          		"multi-match" : { 
-            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-                "query": $SubjectField,
-                "type": "most_fields",
-                "fields": [ "subject_name^2", "subject_name.ngram" ]
-          		}
-          	}
-          }
-        }
+    		"nested": {
+					// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+					"path": "subject",
+					"query": {
+						"multi-match" : { 
+							// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+							"query": $SubjectField,
+							"type": "most_fields",
+							"fields": [ "subject_name^2", "subject_name.ngram" ]
+						}
+					}
+				}
       }
   	}
 	},
@@ -475,36 +474,35 @@
         { "term" : { "document_type" : $document_type}},
         { "term" : { "is_draft" : 0}},
         { "term" : { "status" : 1}},
-        { "range": { "year": { "gte": $starYear, 'lte' => $endYear }}},
+        { "range": { "year": { "gte": $starYear, "lte" : $endYear }}},
         { "nested": {
           	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
           	"path": "school",
           	"query": {
           		"bool": {
-          			"filter": {
+          			"filter": [
           				{ "term" : { "country_id" : $country_id}},
           				{ "term" : { "language_id" : $language_id}},
-         					{ "term" : { "is_university" : $is_university}},
-          			}
+         					{ "term" : { "is_university" : $is_university}}
+								]
           		}
           	}
           }
       	}
       ],
     	"must" : {
-    		{ "nested": {
-          	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
-          	"path": "subject",
-          	"query": {
-          		"multi-match" : { 
-            		// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
-                "query": $SubjectField,
-                "type": "most_fields",
-                "fields": [ "subject_name^2", "subject_name.ngram" ]
-            	}
-            }
-          }
-      	}
+    		"nested": {
+					// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
+					"path": "subject",
+					"query": {
+						"multi-match" : { 
+							// Multi-match: See https://www.elastic.co/guide/en/elasticsearch/guide/current/most-fields.html
+							"query": $SubjectField,
+							"type": "most_fields",
+							"fields": [ "subject_name^2", "subject_name.ngram" ]
+						}
+					}
+				}
     	}
   	}
 	},
@@ -530,17 +528,17 @@
         { "term" : { "document_type" : $document_type}},
         { "term" : { "is_draft" : 0}},
         { "term" : { "status" : 1}},
-        { "range": { "year" : { "gte" : $starYear, 'lte' : $endYear }}},
+        { "range": { "year" : { "gte" : $starYear, "lte" : $endYear }}},
         { "nested": {
           	// Querying Nested Objects: https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html
           	"path": "school",
           	"query": {
           		"bool": {
-          			"filter": {
+          			"filter": [
           				{ "term" : { "country_id" : $country_id}},
           				{ "term" : { "language_id" : $language_id}},
-         					{ "term" : { "is_university" : $is_university}},
-          			}
+         					{ "term" : { "is_university" : $is_university}}
+								]
           		}
           	}
           }
